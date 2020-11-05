@@ -1,0 +1,17 @@
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: postgres-pv-volume
+  namespace: TARGET_K8S_NAMESPACE
+  labels:
+    type: local
+    app: postgres
+spec:
+  storageClassName: postgres-sc
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: "/tmp/data"
+    type: DirectoryOrCreate
