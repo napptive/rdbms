@@ -14,18 +14,25 @@
  * limitations under the License.
  */
 
-package main
+package rdbms
 
 import (
-	"github.com/napptive/go-template/cmd/pummy/commands"
+	"context"
+
+	"github.com/rs/zerolog/log"
+
+	"github.com/jackc/pgx/v4"
 )
 
-// Version of the command
-var Version string
-
-// Commit from which the command was built
-var Commit string
-
-func main() {
-	commands.Execute(Version, Commit)
+//ExecBatch execute a set of intructions, and stop if any instruction fails. Don't support search queries.
+func ExecBatch(ctx context.Context, conn *pgx.Conn, batch *pgx.Batch) error {
+	result := conn.SendBatch(ctx, batch)
+	for i := 0; i < batch.Len(); i++ {
+		ct, err := result.Exec()
+		if err != nil {
+			return err
+		}
+		log.Debug().Int("id", i).Int64("rows-affected", ct.RowsAffected()).Msgf("Query (%d) succesfully executed", i)
+	}
+	return nil
 }

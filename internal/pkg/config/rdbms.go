@@ -13,18 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package main
 
-import (
-	"github.com/napptive/go-template/cmd/dummy/commands"
-)
+package config
 
-// Version of the command
-var Version string
-
-// Commit from which the command was built
-var Commit string
-
-func main() {
-	commands.Execute(Version, Commit)
+// RDBMS is a structure with all the options required by the service to config the database connection.
+type RDBMS struct {
+	ConnString string
 }

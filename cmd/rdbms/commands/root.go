@@ -20,7 +20,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/napptive/go-template/internal/pkg/config"
+	"github.com/napptive/rdbms/internal/pkg/config"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
@@ -43,18 +43,18 @@ var rootCmd = &cobra.Command{
 	Short:   rootCmdShortHelp,
 	Long:    rootCmdLongHelp,
 	Version: "NaN",
-	Run: func(cmd *cobra.Command, args []string) {
-		SetupLogging()
-		if err := cmd.Help(); err != nil {
-			fmt.Println(err)
-			os.Exit(1)
-		}
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return cmd.Help()
 	},
 }
 
 func init() {
-	rootCmd.PersistentFlags().BoolVar(&debugLevel, "debug", false, "Set debug level")
-	rootCmd.PersistentFlags().BoolVar(&consoleLogging, "consoleLogging", false, "Pretty print logging")
+	cobra.OnInitialize(initConfig)
+
+	rootCmd.PersistentFlags().BoolVarP(&debugLevel, "debug", "d", false, "Set debug level")
+	rootCmd.PersistentFlags().BoolVarP(&consoleLogging, "consoleLogging", "cl", false, "Pretty print logging")
+
+	rootCmd.PersistentFlags().StringVarP(&cfg.ConnString, "connectionString", "cs", "User ID=root;Password=myPassword;Host=localhost;Port=5432;Database=myDataBase;", "Database connection string")
 }
 
 // Execute the user command
@@ -70,8 +70,12 @@ func Execute(version string, commit string) {
 	}
 }
 
-// SetupLogging sets the debug level and console logging if required.
-func SetupLogging() {
+func initConfig() {
+	setupLogging()
+}
+
+// setupLogging sets the debug level and console logging if required.
+func setupLogging() {
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
 	if debugLevel {
 		zerolog.SetGlobalLevel(zerolog.DebugLevel)
