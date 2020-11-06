@@ -17,23 +17,22 @@
 package script
 
 import (
-	"encoding/json"
 	"io/ioutil"
 	"time"
+
+	"gopkg.in/yaml.v3"
 )
-
-
 
 // SQL respresents the import file to execute batch command in the database.
 type SQL struct {
-	Steps []SQLStep `json:"steps"`
+	Steps []SQLStep `yaml:"steps,flow"`
 }
 
 // SQLStep represent a set of setence that must executed in the same transaction.
 type SQLStep struct {
-	Name    string   `json:"name"`
-	Timeout string   `json:"timeout"`
-	Queries []string `json:"queries"`
+	Name    string   `yaml:"name"`
+	Timeout string   `yaml:"timeout,omitempty"`
+	Queries []string `yaml:"queries,flow"`
 }
 
 //TimeoutDuration parses the time duration of the step.
@@ -54,10 +53,10 @@ func SQLFileParse(filepath string) (*SQL, error) {
 }
 
 // SQLParse transform a string in a script SQL struct.
-func SQLParse(sqljson []byte) (*SQL, error) {
-	var data SQL
-	if err := json.Unmarshal(sqljson, &data); err != nil {
+func SQLParse(data []byte) (*SQL, error) {
+	var result SQL
+	if err := yaml.Unmarshal(data, &result); err != nil {
 		return nil, err
 	}
-	return &data, nil
+	return &result, nil
 }

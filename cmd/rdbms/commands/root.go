@@ -19,6 +19,7 @@ package commands
 import (
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/napptive/rdbms/internal/pkg/config"
 	"github.com/rs/zerolog"
@@ -54,7 +55,17 @@ func init() {
 	rootCmd.PersistentFlags().BoolVarP(&debugLevel, "debug", "d", false, "Set debug level")
 	rootCmd.PersistentFlags().BoolVarP(&consoleLogging, "consoleLogging", "cl", false, "Pretty print logging")
 
-	rootCmd.PersistentFlags().StringVarP(&cfg.ConnString, "connectionString", "cs", "User ID=root;Password=myPassword;Host=localhost;Port=5432;Database=myDataBase;", "Database connection string")
+	rootCmd.PersistentFlags().StringVarP(&cfg.ConnString, "connectionString", "cs",
+		"User ID=root;Password=myPassword;Host=localhost;Port=5432;Database=myDataBase;",
+		"Database connection string")
+
+	rootCmd.PersistentFlags().IntVarP(&cfg.PingRetries, "pingRetries", "pr", 3,
+		"Number of retries to ping to the database.")
+	rootCmd.PersistentFlags().DurationVarP(&cfg.PingWaitingPeriod, "pingWaitingPeriod", "pw",
+		5*time.Second, "Waiting time between each ping command")
+
+	rootCmd.PersistentFlags().BoolVarP(&cfg.SkipPing, "skipPing", "sp",
+		false, "If true, the command skip the ping step.")
 }
 
 // Execute the user command

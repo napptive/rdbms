@@ -16,7 +16,34 @@
 
 package config
 
+import (
+	"errors"
+	"time"
+)
+
 // RDBMS is a structure with all the options required by the service to config the database connection.
 type RDBMS struct {
+	// ConnString is the postgres connection string.
 	ConnString string
+
+	// PingRetries is the number of retries that a ping is going to be launched.
+	PingRetries int
+
+	// PingWaitingPerios is the time that the thread wait between each ping.
+	PingWaitingPeriod time.Duration
+
+	// IgnorePing allows to the rest of commands skip the ping step
+	SkipPing bool
+}
+
+// IsValid checks if the RBDMS configuration options are valid.
+func (c *RDBMS) IsValid() error {
+	if c.ConnString == "" {
+		return errors.New("ConnString is empty")
+	}
+	if c.PingRetries <= 0 {
+		return errors.New("PingRetries is <=0")
+	}
+
+	return nil
 }

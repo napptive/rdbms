@@ -19,7 +19,7 @@ package commands
 import (
 	"time"
 
-	"github.com/napptive/rdbms/internal/app/schema"
+	"github.com/napptive/rdbms/internal/app/rdbms"
 
 	"github.com/spf13/cobra"
 )
@@ -54,12 +54,14 @@ var loadSchemaCmd = &cobra.Command{
 	Short:   loadSchemaCmdShortHelp,
 
 	RunE: func(cmd *cobra.Command, args []string) error {
-		return schema.Load(loadSchemaVarFilepath, loadSchemaVarDuration, cfg)
+		return rdbms.Load(loadSchemaVarFilepath, loadSchemaVarDuration, cfg)
 	},
 }
 
 func init() {
-	schemaCmd.PersistentFlags().StringVar(&loadSchemaVarFilepath, "scriptLoadPath", "", "Path where the load sql script is located.")
-	schemaCmd.PersistentFlags().DurationVar(&loadSchemaVarDuration, "defaultStepTimeout", 30*time.Second, "Default time for each SQL script step")
+	loadSchemaCmd.PersistentFlags().StringVar(&loadSchemaVarFilepath, "scriptLoadPath", "", "Path where the load sql script is located.")
+	loadSchemaCmd.PersistentFlags().DurationVar(&loadSchemaVarDuration, "defaultStepTimeout", 30*time.Second, "Default time for each SQL script step")
+	schemaCmd.AddCommand(loadSchemaCmd)
+
 	rootCmd.AddCommand(schemaCmd)
 }

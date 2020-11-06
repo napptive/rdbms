@@ -14,25 +14,16 @@
  * limitations under the License.
  */
 
-package rdbms
+package script
 
 import (
-	"context"
+	"testing"
 
-	"github.com/rs/zerolog/log"
-
-	"github.com/jackc/pgx/v4"
+	"github.com/onsi/ginkgo"
+	"github.com/onsi/gomega"
 )
 
-//ExecBatch execute a set of intructions, and stop if any instruction fails. Don't support search queries.
-func ExecBatch(ctx context.Context, conn *pgx.Conn, batch *pgx.Batch) error {
-	result := conn.SendBatch(ctx, batch)
-	for i := 0; i < batch.Len(); i++ {
-		ct, err := result.Exec()
-		if err != nil {
-			return err
-		}
-		log.Debug().Int("id", i).Int64("rows-affected", ct.RowsAffected()).Msgf("Query (%d) succesfully executed", i)
-	}
-	return nil
+func TestScriptPackage(t *testing.T) {
+	gomega.RegisterFailHandler(ginkgo.Fail)
+	ginkgo.RunSpecs(t, "Script package suite")
 }

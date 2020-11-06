@@ -17,6 +17,8 @@
 package config
 
 import (
+	"errors"
+
 	"github.com/rs/zerolog/log"
 )
 
@@ -30,6 +32,16 @@ type Config struct {
 
 // IsValid checks if the configuration options are valid.
 func (c *Config) IsValid() error {
+	if c.Version == "" {
+		return errors.New("Version is empty")
+	}
+	if c.Commit == "" {
+		return errors.New("Commit is empty")
+	}
+	err := c.RDBMS.IsValid()
+	if err != nil {
+		return err
+	}
 	return nil
 }
 

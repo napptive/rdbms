@@ -14,36 +14,37 @@
  * limitations under the License.
  */
 
-package schema
+package rdbms
 
 import (
 	"context"
 	"time"
 
-	"github.com/napptive/rdbms/pkg/rdbms"
-
 	"github.com/napptive/rdbms/internal/pkg/config"
 	"github.com/napptive/rdbms/internal/pkg/script"
+	"github.com/napptive/rdbms/pkg/operations"
 
 	"github.com/jackc/pgx/v4"
 )
 
 //Load creates the basic information in the target database.
 func Load(path string, defaultTimeout time.Duration, cfg config.Config) error {
+	if !cfg.SkipPing {
+		if err := Ping(cfg); err != nil {
+			return err
+		}
+	}
+
 	script, err := script.SQLFileParse(path)
 	if err != nil {
 		return err
 	}
 
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-
-	conn, err := pgx.Connect(ctx, cfg.ConnString)
-	defer conn.Close(ctx)
-
+	conn, err := pgx.Connect(context.Background(), cfg.ConnString)
 	if err != nil {
 		return err
 	}
+	defer conn.Close(context.Background())
 
 	for _, step := range script.Steps {
 		duration, err := step.TimeoutDuration(defaultTimeout)
@@ -56,9 +57,9 @@ func Load(path string, defaultTimeout time.Duration, cfg config.Config) error {
 			batch.Queue(q)
 		}
 
-		bathcCtx, cancel := context.WithTimeout(ctx, duration)
+		bathcCtx, cancel := context.WithTimeout(context.Background(), duration)
 		defer cancel()
-		err = rdbms.ExecBatch(bathcCtx, conn, &batch)
+		err = operations.ExecBatch(bathcCtx, conn, &batch)
 		if err != nil {
 			return err
 		}
