@@ -20,6 +20,8 @@ import (
 	"context"
 	"time"
 
+	"github.com/rs/zerolog/log"
+
 	"github.com/napptive/rdbms/internal/pkg/config"
 	"github.com/napptive/rdbms/internal/pkg/script"
 	"github.com/napptive/rdbms/pkg/operations"
@@ -27,42 +29,81 @@ import (
 	"github.com/jackc/pgx/v4"
 )
 
+// LoadResult store the result infomation of the load operation.
+type LoadResult struct {
+	ExecutedSteps []string
+	SkippedSteps  []string
+}
+
+// Print write in the log the result information.
+func (r *LoadResult) Print() {
+	log.Info().Strs("executed", r.ExecutedSteps).
+		Strs("skipped", r.SkippedSteps).
+		Msgf("Load has executed %d steps and skipped %d steps", len(r.ExecutedSteps), len(r.SkippedSteps))
+}
+
 //Load creates the basic information in the target database.
-func Load(path string, defaultTimeout time.Duration, cfg config.Config) error {
+func Load(path string, defaultTimeout time.Duration, selectedSteps []string, cfg config.Config) (*LoadResult, error) {
+	var executedSteps []string
+	var skippedSteps []string
+
 	if !cfg.SkipPing {
 		if err := Ping(cfg); err != nil {
-			return err
+			return nil, err
 		}
 	}
 
 	script, err := script.SQLFileParse(path)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	conn, err := pgx.Connect(context.Background(), cfg.ConnString)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	defer conn.Close(context.Background())
 
 	for _, step := range script.Steps {
-		duration, err := step.TimeoutDuration(defaultTimeout)
-		if err != nil {
-			return err
-		}
-
-		batch := pgx.Batch{}
-		for _, q := range step.Queries {
-			batch.Queue(q)
-		}
-
-		bathcCtx, cancel := context.WithTimeout(context.Background(), duration)
-		defer cancel()
-		err = operations.ExecBatch(bathcCtx, conn, &batch)
-		if err != nil {
-			return err
+		if len(selectedSteps) == 0 || contains(selectedSteps, step.Name) {
+			executedSteps = append(executedSteps, step.Name)
+			err := execStep(step, defaultTimeout, conn)
+			if err != nil {
+				return nil, err
+			}
+		} else {
+			skippedSteps = append(skippedSteps, step.Name)
 		}
 	}
+	result := &LoadResult{ExecutedSteps: executedSteps, SkippedSteps: skippedSteps}
+	return result, nil
+}
+
+func execStep(step script.SQLStep, defaultTimeout time.Duration, conn *pgx.Conn) error {
+	duration, err := step.TimeoutDuration(defaultTimeout)
+	if err != nil {
+		return err
+	}
+
+	batch := pgx.Batch{}
+	for _, q := range step.Queries {
+		batch.Queue(q)
+	}
+
+	bathcCtx, cancel := context.WithTimeout(context.Background(), duration)
+	defer cancel()
+	err = operations.ExecBatch(bathcCtx, conn, step.Name, &batch)
+	if err != nil {
+		return err
+	}
 	return nil
+}
+
+func contains(s []string, e string) bool {
+	for _, a := range s {
+		if a == e {
+			return true
+		}
+	}
+	return false
 }

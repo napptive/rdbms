@@ -33,10 +33,13 @@ var cfg config.Config
 var debugLevel bool
 var consoleLogging bool
 
-var rootCmdLongHelp = "This is an example service that you should remove when you use this template."
-var rootCmdShortHelp = "Dummy command"
-var rootCmdExample = `$ dummy`
-var rootCmdUse = "dummy"
+var rootCmdLongHelp = "This command contail useful operation to manage a Postgress database."
+var rootCmdShortHelp = "RDBMS command"
+var rootCmdExample = `
+  $ rdbms help
+  $ rdbms ping -c "host=localhost user=postgres password=Pass2020! port=5432"
+`
+var rootCmdUse = "rdbms"
 
 var rootCmd = &cobra.Command{
 	Use:     rootCmdUse,
@@ -53,18 +56,18 @@ func init() {
 	cobra.OnInitialize(initConfig)
 
 	rootCmd.PersistentFlags().BoolVarP(&debugLevel, "debug", "d", false, "Set debug level")
-	rootCmd.PersistentFlags().BoolVarP(&consoleLogging, "consoleLogging", "cl", false, "Pretty print logging")
+	rootCmd.PersistentFlags().BoolVarP(&consoleLogging, "consoleLogging", "l", false, "Pretty print logging")
 
-	rootCmd.PersistentFlags().StringVarP(&cfg.ConnString, "connectionString", "cs",
-		"User ID=root;Password=myPassword;Host=localhost;Port=5432;Database=myDataBase;",
+	rootCmd.PersistentFlags().StringVarP(&cfg.ConnString, "connectionString", "c",
+		"host=localhost user=postgres password=Pass2020! port=5432",
 		"Database connection string")
 
-	rootCmd.PersistentFlags().IntVarP(&cfg.PingRetries, "pingRetries", "pr", 3,
+	rootCmd.PersistentFlags().IntVarP(&cfg.PingRetries, "pingRetries", "r", 3,
 		"Number of retries to ping to the database.")
-	rootCmd.PersistentFlags().DurationVarP(&cfg.PingWaitingPeriod, "pingWaitingPeriod", "pw",
+	rootCmd.PersistentFlags().DurationVarP(&cfg.PingWaitingPeriod, "pingWaitingPeriod", "w",
 		5*time.Second, "Waiting time between each ping command")
 
-	rootCmd.PersistentFlags().BoolVarP(&cfg.SkipPing, "skipPing", "sp",
+	rootCmd.PersistentFlags().BoolVarP(&cfg.SkipPing, "skipPing", "k",
 		false, "If true, the command skip the ping step.")
 }
 

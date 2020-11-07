@@ -52,8 +52,31 @@ var _ = ginkgo.Describe("Load Schema test", func() {
 				SkipPing:          false,
 			},
 		}
+		result, err := Load(filepath, defaultDuration, []string{}, cfg)
+		gomega.Expect(err).To(gomega.Succeed())
+		gomega.Expect(result.ExecutedSteps).To(gomega.HaveLen(3))
+		gomega.Expect(result.SkippedSteps).To(gomega.HaveLen(0))
+		result.Print()
+	})
 
-		gomega.Expect(Load(filepath, defaultDuration, cfg)).To(gomega.Succeed())
+	ginkgo.It("Should work", func() {
+		var filepath = basepath + "/test/data/ValidSQLScript.yaml"
+		cfg := config.Config{
+			Commit:  "111",
+			Version: "0.10",
+
+			RDBMS: config.RDBMS{
+				ConnString:        connstring,
+				PingRetries:       3,
+				PingWaitingPeriod: 5 * time.Second,
+				SkipPing:          false,
+			},
+		}
+		result, err := Load(filepath, defaultDuration, []string{"creation-step", "drop-step"}, cfg)
+		gomega.Expect(err).To(gomega.Succeed())
+		gomega.Expect(result.ExecutedSteps).To(gomega.HaveLen(2))
+		gomega.Expect(result.SkippedSteps).To(gomega.HaveLen(1))
+		result.Print()
 	})
 
 })

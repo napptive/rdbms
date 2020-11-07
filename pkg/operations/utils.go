@@ -26,7 +26,7 @@ import (
 )
 
 //ExecBatch execute a set of intructions, and stop if any instruction fails. Don't support search queries.
-func ExecBatch(ctx context.Context, conn *pgx.Conn, batch *pgx.Batch) error {
+func ExecBatch(ctx context.Context, conn *pgx.Conn, name string, batch *pgx.Batch) error {
 	result := conn.SendBatch(ctx, batch)
 	defer result.Close()
 	for i := 0; i < batch.Len(); i++ {
@@ -34,7 +34,8 @@ func ExecBatch(ctx context.Context, conn *pgx.Conn, batch *pgx.Batch) error {
 		if err != nil {
 			return err
 		}
-		log.Debug().Int("id", i).Int64("rows-affected", ct.RowsAffected()).Msgf("Query (%d) succesfully executed", i)
+		log.Debug().Str("name", name).Int("id", i).
+			Int64("rows-affected", ct.RowsAffected()).Msgf("Query (%d) succesfully executed", i)
 	}
 	return nil
 }

@@ -39,13 +39,17 @@ var schemaCmd = &cobra.Command{
 	},
 }
 
-var loadSchemaCmdLongHelp = "Commands related with the database schema"
-var loadSchemaCmdShortHelp = "Commands related with the database schema"
-var loadSchemaCmdExample = `$ rdbms schema`
-var loadSchemaCmdUse = "schema"
+var loadSchemaCmdLongHelp = "Load execute a set of queries in the target database"
+var loadSchemaCmdShortHelp = "Load command"
+var loadSchemaCmdExample = `
+  $ rdbms schema load --scriptLoadPath test/data/ValidSQLScript.yaml
+  $ rdbms schema load --scriptLoadPath test/data/ValidSQLScript.yaml --selectedStep creation-step --selectedStep drop-step 
+`
+var loadSchemaCmdUse = "load"
 
 var loadSchemaVarFilepath string
 var loadSchemaVarDuration time.Duration
+var loadSchemaVarSteps []string
 
 var loadSchemaCmd = &cobra.Command{
 	Use:     loadSchemaCmdUse,
@@ -54,13 +58,22 @@ var loadSchemaCmd = &cobra.Command{
 	Short:   loadSchemaCmdShortHelp,
 
 	RunE: func(cmd *cobra.Command, args []string) error {
-		return rdbms.Load(loadSchemaVarFilepath, loadSchemaVarDuration, cfg)
+		result, err := rdbms.Load(loadSchemaVarFilepath, loadSchemaVarDuration, loadSchemaVarSteps, cfg)
+		if err != nil {
+			return err
+		}
+		result.Print()
+		return nil
 	},
 }
 
 func init() {
 	loadSchemaCmd.PersistentFlags().StringVar(&loadSchemaVarFilepath, "scriptLoadPath", "", "Path where the load sql script is located.")
+	loadSchemaCmd.MarkPersistentFlagRequired("scriptLoadPath")
+	loadSchemaCmd.MarkPersistentFlagFilename("scriptLoadPath")
+
 	loadSchemaCmd.PersistentFlags().DurationVar(&loadSchemaVarDuration, "defaultStepTimeout", 30*time.Second, "Default time for each SQL script step")
+	loadSchemaCmd.PersistentFlags().StringArrayVar(&loadSchemaVarSteps, "selectedStep", []string{}, "Select the steps that you want to execute, if empty you execute all the steps.")
 	schemaCmd.AddCommand(loadSchemaCmd)
 
 	rootCmd.AddCommand(schemaCmd)
