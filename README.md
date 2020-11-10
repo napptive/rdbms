@@ -1,50 +1,55 @@
-# go-template
-Napptive golang template
+# RDBMS
+RDBMS is an application that contains utils and helper for relationa databases. The objective of this project is to speed up the integration with this type of databases.
 
-The purpose of this project is to provide a common template to develop Golang microservices in Napptive.
+## Project components
 
-## Layout structure
-
-The layout structure is based on the default golang-template layout.
-
-https://github.com/golang-standards/project-layout
+The project compose of the following components:
+* **Postgres K8S deployment**: The K8S yaml file to deploy a postgres instance in Kubernetes.
+* **RDBMS CLI**: A command line interface to load data and ping an existing database.
+* **RDBMS Job Example**: An example to launch a K8S job to load data in a database.
 
 ## Usage
 
-A make file is provided with the following targets:
-
-* clean: Remove build files
-* test: Run the available tests
-* build: Build the files for your local environment
-* build-darwin: Build the files for MacOS
-* build-linux: Build the files for Linux
-* k8s: Generate the Kubernetes deployment files
-* docker-prep: Prepare the Dockerfile folder with all the extra files
-* docker-build: Build the Dockerfile locally
-* docker-push: Push the image to the selected repository. You must make login before to push the docker image.
-
----
-**Important**
-
-If you are developing with MacOS/Darwin, you must install gnu-sed.
-
 ```
-brew install gnu-sed
+This command contail useful operations to manage a Postgress database.
+
+Usage:
+  rdbms [flags]
+  rdbms [command]
+
+Examples:
+
+  $ rdbms help
+  $ rdbms ping -c "host=localhost user=postgres password=Pass2020! port=5432"
+  $ rdbms schema load --scriptLoadPath test/data/ValidSQLScript.yaml
+  $ rdbms schema load --scriptLoadPath test/data/ValidSQLScript.yaml --selectedStep creation-step --selectedStep drop-step 
+
+
+Available Commands:
+  help        Help about any command
+  ping        Ping databases
+  schema      Commands related with the database schema
+
+Flags:
+  -c, --connectionString string      Database connection string (default "host=localhost user=postgres password=Pass2020! port=5432")
+  -l, --consoleLogging               Pretty print logging
+  -d, --debug                        Set debug level
+  -h, --help                         help for rdbms
+  -r, --pingRetries int              Number of retries to ping to the database. (default 3)
+  -w, --pingWaitingPeriod duration   Waiting time between each ping command (default 5s)
+  -k, --skipPing                     If true, the command skip the ping step.
+
+Use "rdbms [command] --help" for more information about a command.
 ```
----
-
-## Integration with Code Climate
-
-This template is integrated with the Code Climate service.
-
-[![Maintainability](https://api.codeclimate.com/v1/badges/d426ab46dd6c71fcb93b/maintainability)](https://codeclimate.com/repos/5f8e9d4ccdd59e0541004d1a/maintainability) [![Test Coverage](https://api.codeclimate.com/v1/badges/d426ab46dd6c71fcb93b/test_coverage)](https://codeclimate.com/repos/5f8e9d4ccdd59e0541004d1a/test_coverage)
 
 
-## Integration with Github Actions
+## Badges
 
-This template is integrated with GitHub Actions. You need to add the secret `CodeClimateRerporterID` in the repository settings.
 
-![Main](https://github.com/napptive/go-template/workflows/Main/badge.svg)
+[![Maintainability](https://api.codeclimate.com/v1/badges/ba6870eb1d521374c67c/maintainability)](https://codeclimate.com/repos/5f97e2a0efdcff039e00428e/maintainability) [![Test Coverage](https://api.codeclimate.com/v1/badges/ba6870eb1d521374c67c/test_coverage)](https://codeclimate.com/repos/5f97e2a0efdcff039e00428e/test_coverage)
+
+![Main](https://github.com/napptive/rdbms/workflows/Main/badge.svg)
+
 
 ## License
 

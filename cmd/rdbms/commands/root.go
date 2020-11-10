@@ -33,11 +33,13 @@ var cfg config.Config
 var debugLevel bool
 var consoleLogging bool
 
-var rootCmdLongHelp = "This command contail useful operation to manage a Postgress database."
+var rootCmdLongHelp = "This command contail useful operations to manage a Postgress database."
 var rootCmdShortHelp = "RDBMS command"
 var rootCmdExample = `
   $ rdbms help
   $ rdbms ping -c "host=localhost user=postgres password=Pass2020! port=5432"
+  $ rdbms schema load --scriptLoadPath test/data/ValidSQLScript.yaml
+  $ rdbms schema load --scriptLoadPath test/data/ValidSQLScript.yaml --selectedStep creation-step --selectedStep drop-step 
 `
 var rootCmdUse = "rdbms"
 

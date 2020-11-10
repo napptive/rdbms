@@ -1,0 +1,36 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: rdbms-load-job
+  namespace: TARGET_K8S_NAMESPACE
+  labels:
+    app: rdbms-load
+spec:
+  template:
+    spec:
+      containers:
+        - name: rdbms-load-job
+          image: TARGET_DOCKER_REGISTRY/rdbms:VERSION
+          env:
+            - name: POSTGRES_HOST
+              value: "postgress"
+            - name: POSTGRES_PORT
+              value: "5432"
+          envFrom:
+            - configMapRef:
+                name: postgres-config
+          command:
+            - -c="host=$(POSTGRES_HOST) port=$(POSTGRES_PORT) user=$(POSTGRES_USER) password=$(POSTGRES_PASSWORD) dbname=$(POSTGRES_DB)",
+            - schema
+            - load
+            - --scriptLoadPath="/napptive/config/sql-script.yaml"
+          volumeMounts:
+            - name: config
+              mountPath: "/napptive/config"
+              readOnly: true
+      volumes:
+        - name: config
+          configMap:
+            name: rbdms-config
+      restartPolicy: Never
+  backoffLimit: 4
