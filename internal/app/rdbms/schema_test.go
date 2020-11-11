@@ -28,7 +28,7 @@ import (
 
 var _ = ginkgo.Describe("Load Schema test", func() {
 
-	if !utils.RunIntegrationTests() {
+	if !utils.RunIntegrationTests("schema_test") {
 		log.Warn().Msg("Integration tests are skipped")
 		return
 	}

@@ -27,8 +27,8 @@ import (
 )
 
 var _ = ginkgo.Describe("Ping Test", func() {
-
-	if !utils.RunIntegrationTests() {
+	
+	if !utils.RunIntegrationTests("ping_test") {
 		log.Warn().Msg("Integration tests are skipped")
 		return
 	}

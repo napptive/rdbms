@@ -24,10 +24,10 @@ import (
 
 // Config structure with all the options required by the service and service components.
 type Config struct {
+	RDBMS
+
 	Version string
 	Commit  string
-
-	RDBMS
 }
 
 // IsValid checks if the configuration options are valid.

@@ -7,5 +7,3 @@ metadata:
     app: postgres
 data:
   POSTGRES_DB: postgresdb
-  POSTGRES_USER: postgresadmin
-  POSTGRES_PASSWORD: admin123

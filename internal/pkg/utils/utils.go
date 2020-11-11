@@ -25,9 +25,12 @@ import (
 var projectFiles = []string{"Makefile"}
 
 // RunIntegrationTests checks whether integration tests should be executed.
-func RunIntegrationTests() bool {
+func RunIntegrationTests(id string) bool {
 	var runIntegration = os.Getenv("RUN_INTEGRATION_TEST")
-	return runIntegration == "true"
+	if runIntegration == "all" {
+		return true
+	}
+	return runIntegration == id
 }
 
 // ProjectDir is a method to extract the folder of the project.
