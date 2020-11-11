@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rdbms-load-config
+  namespace: TARGET_K8S_NAMESPACE
+  labels:
+    app: rdbms-load
+data:
+  sql-script.yaml: |
+    steps:
+    - name: "creation-step"
+      timeout: "5s"
+      queries:
+        - CREATE SCHEMA IF NOT EXISTS test;
+        - CREATE TABLE IF NOT EXISTS test.test (coltest varchar(20));
+
+    - name: insert-step
+      timeout: 7s
+      queries:
+        - INSERT INTO test.test (coltest) VALUES ('It works!');
+
+    - name: "drop-step"
+      timeout: "7s"
+      queries:
+        - DROP TABLE IF EXISTS test.test;
+        - DROP SCHEMA IF EXISTS test;

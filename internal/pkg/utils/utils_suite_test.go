@@ -14,31 +14,16 @@
  * limitations under the License.
  */
 
-package commands
+package utils
 
 import (
-	"github.com/napptive/go-template/internal/app/dummy"
-	"github.com/spf13/cobra"
+	"testing"
+
+	"github.com/onsi/ginkgo"
+	"github.com/onsi/gomega"
 )
 
-var runCmdLongHelp = "Launch the Dummy service"
-var runCmdShortHelp = "Lauch the service"
-var runCmdExample = `$ dummy run`
-var runCmdUse = "run"
-
-var runCmd = &cobra.Command{
-	Use:     runCmdUse,
-	Long:    runCmdLongHelp,
-	Example: runCmdExample,
-	Short:   runCmdShortHelp,
-	Run: func(cmd *cobra.Command, args []string) {
-		SetupLogging()
-		cfg.Debug = debugLevel
-		s := dummy.NewService(cfg)
-		s.Run()
-	},
-}
-
-func init() {
-	rootCmd.AddCommand(runCmd)
+func TestUtilPackage(t *testing.T) {
+	gomega.RegisterFailHandler(ginkgo.Fail)
+	ginkgo.RunSpecs(t, "Utils package suite")
 }

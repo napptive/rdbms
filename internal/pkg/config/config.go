@@ -17,23 +17,36 @@
 package config
 
 import (
+	"errors"
+
 	"github.com/rs/zerolog/log"
 )
 
 // Config structure with all the options required by the service and service components.
 type Config struct {
+	RDBMS
+
 	Version string
 	Commit  string
-	Debug   bool
 }
 
 // IsValid checks if the configuration options are valid.
 func (c *Config) IsValid() error {
+	if c.Version == "" {
+		return errors.New("Version is empty")
+	}
+	if c.Commit == "" {
+		return errors.New("Commit is empty")
+	}
+	err := c.RDBMS.IsValid()
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
 // Print the configuration using the application logger.
 func (c *Config) Print() {
 	// Use logger to print the configuration
-	log.Info().Str("version", c.Version).Str("commit", c.Commit).Msg("Orcha config")
+	log.Info().Str("version", c.Version).Str("commit", c.Commit).Msg("Config file")
 }

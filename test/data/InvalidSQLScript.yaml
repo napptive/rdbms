@@ -1,0 +1,17 @@
+#Invalid file
+steps-invalid:
+  - name: "creation-step"
+    timeout: "5s"
+    queries:
+      - CREATE SCHEMA test;
+      - CREATE TABLE test.test (coltest varchar(20));
+
+  - name: insert-step
+    timeout: 7s
+    queries:
+      - insert into test.test (coltest) values ('It works!');
+
+  - name: "drop-step"
+    timeout: "7s"
+    queries:
+      - DROP TABLE test.test;
