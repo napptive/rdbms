@@ -65,10 +65,13 @@ var _ = ginkgo.Describe("SQL Timeout Duration tests", func() {
 
 var _ = ginkgo.Describe("SQL File Parse tests", func() {
 
-	var basepath = utils.ProjectDir("napptive/rdbms")
+	basepath, err := utils.ProjectDir()
+	if err != nil {
+		panic(err)
+	}
 
 	ginkgo.It("Should parse the file", func() {
-		var filepath = basepath + "/test/data/ValidSQLScript.yaml"
+		var filepath = *basepath + "/test/data/ValidSQLScript.yaml"
 		sql, err := SQLFileParse(filepath)
 
 		gomega.Expect(err).To(gomega.Succeed())
@@ -76,7 +79,7 @@ var _ = ginkgo.Describe("SQL File Parse tests", func() {
 		gomega.Expect(sql.Steps).To(gomega.HaveLen(3))
 	})
 	ginkgo.It("Should not parse anything", func() {
-		var filepath = basepath + "/test/data/InvalidSQLScript.yaml"
+		var filepath = *basepath + "/test/data/InvalidSQLScript.yaml"
 		sql, err := SQLFileParse(filepath)
 
 		gomega.Expect(err).To(gomega.Succeed())
@@ -84,7 +87,7 @@ var _ = ginkgo.Describe("SQL File Parse tests", func() {
 		gomega.Expect(sql.Steps).To(gomega.BeEmpty())
 	})
 	ginkgo.It("Should fail incorrect format", func() {
-		var filepath = basepath + "/test/data/RandomFile.txt"
+		var filepath = *basepath + "/test/data/RandomFile.txt"
 		_, err := SQLFileParse(filepath)
 
 		gomega.Expect(err).NotTo(gomega.Succeed())

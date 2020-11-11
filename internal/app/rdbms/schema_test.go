@@ -33,14 +33,17 @@ var _ = ginkgo.Describe("Load Schema test", func() {
 		return
 	}
 
-	var basepath = utils.ProjectDir("napptive/rdbms")
+	basepath, err := utils.ProjectDir()
+	if err != nil {
+		panic(err)
+	}
 
 	var connstring = "host=localhost user=postgres password=Pass2020! port=5432"
 
 	var defaultDuration = 5 * time.Second
 
 	ginkgo.It("Should work", func() {
-		var filepath = basepath + "/test/data/ValidSQLScript.yaml"
+		var filepath = *basepath + "/test/data/ValidSQLScript.yaml"
 		cfg := config.Config{
 			Commit:  "111",
 			Version: "0.10",
@@ -60,7 +63,7 @@ var _ = ginkgo.Describe("Load Schema test", func() {
 	})
 
 	ginkgo.It("Should work", func() {
-		var filepath = basepath + "/test/data/ValidSQLScript.yaml"
+		var filepath = *basepath + "/test/data/ValidSQLScript.yaml"
 		cfg := config.Config{
 			Commit:  "111",
 			Version: "0.10",
