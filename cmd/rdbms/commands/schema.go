@@ -69,9 +69,16 @@ var loadSchemaCmd = &cobra.Command{
 
 func init() {
 	loadSchemaCmd.PersistentFlags().StringVar(&loadSchemaVarFilepath, "scriptLoadPath", "", "Path where the load sql script is located.")
-	loadSchemaCmd.MarkPersistentFlagRequired("scriptLoadPath")
-	loadSchemaCmd.MarkPersistentFlagFilename("scriptLoadPath")
-
+	err:=loadSchemaCmd.MarkPersistentFlagRequired("scriptLoadPath")
+	if err != nil {
+		panic(err)
+	}
+	
+	err= loadSchemaCmd.MarkPersistentFlagFilename("scriptLoadPath")
+	if err != nil {
+		panic(err)
+	}
+	
 	loadSchemaCmd.PersistentFlags().DurationVar(&loadSchemaVarDuration, "defaultStepTimeout", 30*time.Second, "Default time for each SQL script step")
 	loadSchemaCmd.PersistentFlags().StringArrayVar(&loadSchemaVarSteps, "selectedStep", []string{}, "Select the steps that you want to execute, if empty you execute all the steps.")
 	schemaCmd.AddCommand(loadSchemaCmd)
