@@ -7,6 +7,7 @@ The project compose of the following components:
 * **Postgres K8S deployment**: The K8S yaml file to deploy a postgres instance in Kubernetes.
 * **RDBMS CLI**: A command line interface to load data and ping an existing database.
 * **RDBMS Job Example**: An example to launch a K8S job to load data in a database.
+* **RDBMS Conn Wrapper**: This project include interfaces to create PGX Connections that supports mockgen (see pkg/rdbms).
 
 ## Usage
 
