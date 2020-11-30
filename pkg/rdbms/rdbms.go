@@ -25,9 +25,15 @@ import (
 
 //RDBMS is the interface to create rdbms connections.
 type RDBMS interface {
+	// SingleConnect establishes a connection with a PostgreSQL server with a connection string. See pgconn.Connect for details.
 	SingleConnect(context.Context, string) (SingleConn, error)
+	// SingleConnectConfig establishes a connection with a PostgreSQL server with a configuration struct. connConfig must have been created by ParseConfig.
 	SingleConnectConfig(context.Context, *pgx.ConnConfig) (SingleConn, error)
+
+	// PoolConnect creates a new Pool and immediately establishes one connection. ctx can be used to cancel this initial connection. See ParseConfig for information on connString format.
 	PoolConnect(context.Context, string) (PoolConn, error)
+
+	// PoolConnectConfig creates a new Pool and immediately establishes one connection. ctx can be used to cancel this initial connection. config must have been created by ParseConfig.
 	PoolConnectConfig(context.Context, *pgxpool.Config) (PoolConn, error)
 }
 
@@ -36,6 +42,7 @@ func NewRDBMS() RDBMS {
 	return &rdbms{}
 }
 
+//rdbms is the internal struct that contains the connection methods.
 type rdbms struct{}
 
 // SingleConnect establishes a connection with a PostgreSQL server with a connection string.
