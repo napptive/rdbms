@@ -25,6 +25,7 @@ import (
 	"github.com/napptive/rdbms/internal/pkg/config"
 	"github.com/napptive/rdbms/internal/pkg/script"
 	"github.com/napptive/rdbms/pkg/operations"
+	"github.com/napptive/rdbms/pkg/rdbms"
 
 	"github.com/jackc/pgx/v4"
 )
@@ -44,6 +45,11 @@ func (r *LoadResult) Print() {
 
 //Load creates the basic information in the target database.
 func Load(path string, defaultTimeout time.Duration, selectedSteps []string, cfg config.Config) (*LoadResult, error) {
+	r := rdbms.NewRDBMS()
+	return load(path, defaultTimeout, selectedSteps, cfg, r)
+}
+
+func load(path string, defaultTimeout time.Duration, selectedSteps []string, cfg config.Config, rdbms rdbms.RDBMS) (*LoadResult, error) {
 	var executedSteps []string
 	var skippedSteps []string
 
@@ -58,7 +64,7 @@ func Load(path string, defaultTimeout time.Duration, selectedSteps []string, cfg
 		return nil, err
 	}
 
-	conn, err := pgx.Connect(context.Background(), cfg.ConnString)
+	conn, err := rdbms.SingleConnect(context.Background(), cfg.ConnString)
 	if err != nil {
 		return nil, err
 	}
@@ -79,7 +85,7 @@ func Load(path string, defaultTimeout time.Duration, selectedSteps []string, cfg
 	return result, nil
 }
 
-func execStep(step script.SQLStep, defaultTimeout time.Duration, conn *pgx.Conn) error {
+func execStep(step script.SQLStep, defaultTimeout time.Duration, conn rdbms.Conn) error {
 	duration, err := step.TimeoutDuration(defaultTimeout)
 	if err != nil {
 		return err
