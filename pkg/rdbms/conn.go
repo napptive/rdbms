@@ -24,6 +24,27 @@ import (
 	"github.com/jackc/pgx/v4/pgxpool"
 )
 
+// CommandTag is the result of an Exec function
+type CommandTag interface {
+	// Delete is true if the command tag starts with "DELETE".
+	Delete() bool
+
+	// Insert is true if the command tag starts with "INSERT".
+	Insert() bool
+
+	// RowsAffected returns the number of rows affected. If the CommandTag was not for a row affecting command (e.g. "CREATE TABLE") then it returns 0.
+	RowsAffected() int64
+
+	// Select is true if the command tag starts with "SELECT".
+	Select() bool
+
+	// String transform the result into a string.
+	String() string
+
+	// Update is true if the command tag starts with "UPDATE".
+	Update() bool
+}
+
 // Conn is the interface that wraps the pgx connection.
 type Conn interface {
 	// Begin starts a transaction. Unlike database/sql, the context only affects the begin command. i.e. there is no auto-rollback on context cancellation.
@@ -37,7 +58,7 @@ type Conn interface {
 	CopyFrom(context.Context, pgx.Identifier, []string, pgx.CopyFromSource) (int64, error)
 
 	// Exec executes sql. sql can be either a prepared statement name or an SQL string. arguments should be referenced positionally from the sql string as $1, $2, etc.
-	Exec(context.Context, string, ...interface{}) (pgconn.CommandTag, error)
+	Exec(context.Context, string, ...interface{}) (CommandTag, error)
 
 	// Query executes sql with args. If there is an error the returned Rows will be returned in an error state. So it is allowed to ignore the error returned from Query and handle it in Rows.
 	// For extra control over how the query is executed, the types QuerySimpleProtocol, QueryResultFormats, and QueryResultFormatsByOID may be used as the first args to control exactly how the query is executed. This is rarely needed. See the documentation for those types for details.
@@ -78,6 +99,15 @@ type SingleConn interface {
 	Prepare(context.Context, string, string) (*pgconn.StatementDescription, error)
 }
 
+type singleConn struct {
+	*pgx.Conn
+}
+
+// Exec executes sql. sql can be either a prepared statement name or an SQL string. arguments should be referenced positionally from the sql string as $1, $2, etc.
+func (c *singleConn) Exec(ctx context.Context, query string, args ...interface{}) (CommandTag, error) {
+	return c.Conn.Exec(ctx, query, args)
+}
+
 // PoolConn is a Conn based on connection pool.
 type PoolConn interface {
 	// Conn is the basic pgx connection
@@ -97,6 +127,11 @@ type PoolConn interface {
 // pool is a struct to wrapp the pgxpool.Pool struct and return rdbms interface objects.
 type pool struct {
 	*pgxpool.Pool
+}
+
+// Exec executes sql. sql can be either a prepared statement name or an SQL string. arguments should be referenced positionally from the sql string as $1, $2, etc.
+func (p *pool) Exec(ctx context.Context, query string, args ...interface{}) (CommandTag, error) {
+	return p.Pool.Exec(ctx, query, args)
 }
 
 // AcquireConn obtains a free connection.
@@ -125,7 +160,12 @@ type acquiredConn struct {
 	*pgxpool.Conn
 }
 
+// Exec executes sql. sql can be either a prepared statement name or an SQL string. arguments should be referenced positionally from the sql string as $1, $2, etc.
+func (c *acquiredConn) Exec(ctx context.Context, query string, args ...interface{}) (CommandTag, error) {
+	return c.Conn.Exec(ctx, query, args)
+}
+
 // SingleConn recovers the underlying single conn used by the acquired connection
 func (c *acquiredConn) SingleConn() SingleConn {
-	return c.Conn.Conn()
+	return &singleConn{c.Conn.Conn()}
 }

@@ -47,12 +47,20 @@ type rdbms struct{}
 
 // SingleConnect establishes a connection with a PostgreSQL server with a connection string.
 func (r *rdbms) SingleConnect(ctx context.Context, connString string) (SingleConn, error) {
-	return pgx.Connect(ctx, connString)
+	p, err := pgx.Connect(ctx, connString)
+	if err != nil {
+		return nil, err
+	}
+	return &singleConn{p}, nil
 }
 
 // SingleConnectConfig establishes a connection with a PostgreSQL server with a configuration struct. connConfig must have been created by ParseConfig.
 func (r *rdbms) SingleConnectConfig(ctx context.Context, connConfig *pgx.ConnConfig) (SingleConn, error) {
-	return pgx.ConnectConfig(ctx, connConfig)
+	p, err := pgx.ConnectConfig(ctx, connConfig)
+	if err != nil {
+		return nil, err
+	}
+	return &singleConn{p}, nil
 }
 
 // PoolConnect creates a new Pool and immediately establishes one connection. ctx can be used to cancel this initial connection. See ParseConfig for information on connString format.
