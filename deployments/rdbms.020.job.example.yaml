@@ -31,6 +31,6 @@ spec:
       volumes:
         - name: config
           configMap:
-            name: rbdms-config
+            name: rdbms-load-config
       restartPolicy: Never
   backoffLimit: 4
