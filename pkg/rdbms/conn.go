@@ -105,7 +105,7 @@ type singleConn struct {
 
 // Exec executes sql. sql can be either a prepared statement name or an SQL string. arguments should be referenced positionally from the sql string as $1, $2, etc.
 func (c *singleConn) Exec(ctx context.Context, query string, args ...interface{}) (CommandTag, error) {
-	return c.Conn.Exec(ctx, query, args)
+	return c.Conn.Exec(ctx, query, args...)
 }
 
 // PoolConn is a Conn based on connection pool.
@@ -131,7 +131,7 @@ type pool struct {
 
 // Exec executes sql. sql can be either a prepared statement name or an SQL string. arguments should be referenced positionally from the sql string as $1, $2, etc.
 func (p *pool) Exec(ctx context.Context, query string, args ...interface{}) (CommandTag, error) {
-	return p.Pool.Exec(ctx, query, args)
+	return p.Pool.Exec(ctx, query, args...)
 }
 
 // AcquireConn obtains a free connection.
@@ -162,7 +162,7 @@ type acquiredConn struct {
 
 // Exec executes sql. sql can be either a prepared statement name or an SQL string. arguments should be referenced positionally from the sql string as $1, $2, etc.
 func (c *acquiredConn) Exec(ctx context.Context, query string, args ...interface{}) (CommandTag, error) {
-	return c.Conn.Exec(ctx, query, args)
+	return c.Conn.Exec(ctx, query, args...)
 }
 
 // SingleConn recovers the underlying single conn used by the acquired connection
