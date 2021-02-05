@@ -15,6 +15,7 @@ spec:
       labels:
         app: postgres
     spec:
+      priorityClassName: napptive-high-priority
       containers:
         - name: postgres
           image: postgres:13-alpine
