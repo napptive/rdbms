@@ -1,45 +1,36 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: postgres-slave
+  name: postgres
   namespace: TARGET_K8S_NAMESPACE
   labels:
-    app: postgres-slave
+    app: postgres
 spec:
-  serviceName: "postgres-slave"
+  serviceName: "postgres"
   replicas: 1
   selector:
     matchLabels:
-      app: postgres-slave
+      app: postgres
   template:
     metadata:
       labels:
-        app: postgres-slave
+        app: postgres
     spec:
       priorityClassName: napptive-high-priority
       containers:
-        - name: postgres-slave
+        - name: postgres
           image: bitnami/postgresql:12.1.0
           imagePullPolicy: "IfNotPresent"
           ports:
             - containerPort: 5432
+          envFrom:
+            - secretRef:
+                name: postgres-secret
+            - configMapRef:
+                name: postgres-config
           env:
-            - name: POSTGRES_REPLICATION_MODE
-              value: slave
             - name: POSTGRESQL_REPLICATION_MODE
-              value: slave
-            - name: POSTGRESQL_USERNAME
-              value: postgres
-            - name: POSTGRESQL_PASSWORD
-              value: password
-            - name: POSTGRESQL_DATABASE
-              value: postgresdb
-            - name: POSTGRESQL_REPLICATION_USER
-              value: postgres
-            - name: POSTGRESQL_REPLICATION_PASSWORD
-              value: password
-            - name: POSTGRESQL_MASTER_HOST
-              value: postgres
+              value: master
           volumeMounts:
             - mountPath: /bitnami/postgresql
               name: postgredb

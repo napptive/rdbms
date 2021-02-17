@@ -7,3 +7,4 @@ metadata:
     app: postgres
 data:
   POSTGRES_DB: postgresdb
+  POSTGRESQL_DATABASE: postgresdb
