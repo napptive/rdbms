@@ -98,5 +98,14 @@ var _ = ginkgo.Describe("SQL File Parse tests", func() {
 
 		gomega.Expect(err).NotTo(gomega.Succeed())
 	})
+	ginkgo.It("Should be able to parse complex query", func() {
+		var filepath = *basepath + "/test/data/ComplexValidSQLScript.yaml"
+		sql, err := SQLFileParse(filepath)
+		gomega.Expect(err).To(gomega.Succeed())
+		gomega.Expect(sql).NotTo(gomega.BeNil())
+		gomega.Expect(sql.Steps).To(gomega.HaveLen(2))
+		gomega.Expect(sql.Steps[0].Queries).To(gomega.HaveLen(1))
+		gomega.Expect(sql.Steps[1].Queries).To(gomega.HaveLen(1))
+	})
 
 })

@@ -17,10 +17,14 @@
 package script
 
 import (
+	"fmt"
+	"github.com/napptive/nerrors/pkg/nerrors"
+	"github.com/rs/zerolog/log"
 	"io/ioutil"
 	"time"
 
-	"gopkg.in/yaml.v3"
+	"gopkg.in/yaml.v2"
+
 )
 
 // SQL respresents the import file to execute batch command in the database.
@@ -52,11 +56,43 @@ func SQLFileParse(filepath string) (*SQL, error) {
 	return SQLParse(data)
 }
 
-// SQLParse transform a string in a script SQL struct.
-func SQLParse(data []byte) (*SQL, error) {
+
+func SQLParse(data []byte)  (*SQL, error){
 	var result SQL
-	if err := yaml.Unmarshal(data, &result); err != nil {
+	m := yaml.MapSlice{}
+	err := yaml.Unmarshal(data, &m)
+	if err != nil {
 		return nil, err
+	}
+
+	if len(m) <= 0 {
+		return nil, nerrors.NewInternalError("Invalid data in yaml file")
+	}
+	// check entry key
+	if m[0].Key == "steps" {
+
+		steps := m[0].Value.([]interface{})
+		for _, s := range steps {
+			r := s.(yaml.MapSlice)
+			var sql SQLStep
+			for _, entry := range r {
+				switch entry.Key {
+				case "name":
+					sql.Name = fmt.Sprintf("%v", entry.Value)
+				case "timeout":
+					sql.Timeout = fmt.Sprintf("%v", entry.Value)
+				case "queries":
+					query := entry.Value.([]interface{})
+					for _, q := range query {
+						sql.Queries = append(sql.Queries, fmt.Sprintf("%v", q))
+					}
+				default:
+					return nil, nerrors.NewInternalError("unexpected key found in yaml [%s]", entry.Key)
+				}
+			}
+			result.Steps = append(result.Steps, sql)
+			log.Debug().Interface("sql", sql).Msg("SQL!")
+		}
 	}
 	return &result, nil
 }
