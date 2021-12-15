@@ -46,9 +46,6 @@ Use "rdbms [command] --help" for more information about a command.
 
 ## Badges
 
-
-[![Maintainability](https://api.codeclimate.com/v1/badges/ba6870eb1d521374c67c/maintainability)](https://codeclimate.com/repos/5f97e2a0efdcff039e00428e/maintainability) [![Test Coverage](https://api.codeclimate.com/v1/badges/ba6870eb1d521374c67c/test_coverage)](https://codeclimate.com/repos/5f97e2a0efdcff039e00428e/test_coverage)
-
 ![Check changes in the Main branch](https://github.com/napptive/rdbms/workflows/Check%20changes%20in%20the%20Main%20branch/badge.svg?branch=main)
 
 
