@@ -1,6 +1,6 @@
 module github.com/napptive/rdbms
 
-go 1.15
+go 1.16
 
 require (
 	github.com/jackc/pgconn v1.8.1
