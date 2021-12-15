@@ -1,4 +1,4 @@
-module github.com/napptive/rdbms
+module github.com/napptive/rdbms/v2
 
 go 1.16
 
