@@ -22,10 +22,10 @@ import (
 
 	"github.com/rs/zerolog/log"
 
-	"github.com/napptive/rdbms/internal/pkg/config"
-	"github.com/napptive/rdbms/internal/pkg/script"
-	"github.com/napptive/rdbms/pkg/operations"
-	"github.com/napptive/rdbms/pkg/rdbms"
+	"github.com/napptive/rdbms/v2/internal/pkg/config"
+	"github.com/napptive/rdbms/v2/internal/pkg/script"
+	"github.com/napptive/rdbms/v2/pkg/operations"
+	"github.com/napptive/rdbms/v2/pkg/rdbms"
 
 	"github.com/jackc/pgx/v4"
 )

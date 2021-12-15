@@ -20,7 +20,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/napptive/rdbms/pkg/rdbms"
+	"github.com/napptive/rdbms/v2/pkg/rdbms"
 	"github.com/rs/zerolog/log"
 
 	"github.com/jackc/pgx/v4"

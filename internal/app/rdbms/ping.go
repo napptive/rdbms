@@ -19,8 +19,8 @@ package rdbms
 import (
 	"context"
 
-	"github.com/napptive/rdbms/internal/pkg/config"
-	"github.com/napptive/rdbms/pkg/operations"
+	"github.com/napptive/rdbms/v2/internal/pkg/config"
+	"github.com/napptive/rdbms/v2/pkg/operations"
 )
 
 //Ping verifies if the database is alive.

@@ -16,7 +16,7 @@
 package main
 
 import (
-	"github.com/napptive/rdbms/cmd/rdbms/commands"
+	"github.com/napptive/rdbms/v2/cmd/rdbms/commands"
 )
 
 // Version of the command
