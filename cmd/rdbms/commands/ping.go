@@ -17,7 +17,7 @@
 package commands
 
 import (
-	"github.com/napptive/rdbms/internal/app/rdbms"
+	"github.com/napptive/rdbms/v2/internal/app/rdbms"
 	"github.com/spf13/cobra"
 )
 

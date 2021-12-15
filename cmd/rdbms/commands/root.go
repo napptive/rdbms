@@ -21,7 +21,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/napptive/rdbms/internal/pkg/config"
+	"github.com/napptive/rdbms/v2/internal/pkg/config"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 

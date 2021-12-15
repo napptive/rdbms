@@ -19,7 +19,7 @@ package script
 import (
 	"time"
 
-	"github.com/napptive/rdbms/internal/pkg/utils"
+	"github.com/napptive/rdbms/v2/internal/pkg/utils"
 
 	"github.com/onsi/ginkgo"
 	"github.com/onsi/gomega"

@@ -19,15 +19,15 @@ package rdbms
 import (
 	"time"
 
-	"github.com/napptive/rdbms/internal/pkg/config"
-	"github.com/napptive/rdbms/internal/pkg/utils"
+	"github.com/napptive/rdbms/v2/internal/pkg/config"
+	"github.com/napptive/rdbms/v2/internal/pkg/utils"
 	"github.com/onsi/ginkgo"
 	"github.com/onsi/gomega"
 	"github.com/rs/zerolog/log"
 )
 
 var _ = ginkgo.Describe("Ping Test", func() {
-	
+
 	if !utils.RunIntegrationTests("ping_test") {
 		log.Warn().Msg("Integration tests are skipped")
 		return
