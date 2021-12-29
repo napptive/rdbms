@@ -145,6 +145,8 @@ k8s-kind:
 		mv $(K8S_FOLDER)/postgres.005.secret.example.example.yaml $(K8S_FOLDER)/postgres.005.secret.kind.all.yaml ; \
 		rm $(K8S_FOLDER)/*.gcp.*.yaml ; \
 		rm $(K8S_FOLDER)/*.example.example.yaml ; \
+		rm $(K8S_FOLDER)/*.aks.all.yaml ; \
+		rm $(K8S_FOLDER)/postgres.040.statefulset.all.all.yaml ; \
 		$(SED) -i 's/TARGET_K8S_NAMESPACE/$(TARGET_K8S_NAMESPACE)/' $(K8S_FOLDER)/*.yaml ;\
 		$(SED) -i 's/TARGET_DOCKER_REGISTRY/'$(TARGET_DOCKER_REGISTRY)'/' $(K8S_FOLDER)/*.yaml ;\
 		$(SED) -i 's/VERSION/$(VERSION)/' $(K8S_FOLDER)/*.yaml ;\
