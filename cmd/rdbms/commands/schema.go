@@ -43,11 +43,13 @@ var loadSchemaCmdLongHelp = "Load execute a set of queries in the target databas
 var loadSchemaCmdShortHelp = "Load command"
 var loadSchemaCmdExample = `
   $ rdbms schema load --scriptLoadPath test/data/ValidSQLScript.yaml
+  $ rdbms schema load --scriptLoadPath test/directory-with-scripts/ --fileExtension .sql
   $ rdbms schema load --scriptLoadPath test/data/ValidSQLScript.yaml --selectedStep creation-step --selectedStep drop-step 
 `
 var loadSchemaCmdUse = "load"
 
 var loadSchemaVarFilepath string
+var loadSchemaFileExtension string
 var loadSchemaVarDuration time.Duration
 var loadSchemaVarSteps []string
 
@@ -58,27 +60,24 @@ var loadSchemaCmd = &cobra.Command{
 	Short:   loadSchemaCmdShortHelp,
 
 	RunE: func(cmd *cobra.Command, args []string) error {
-		result, err := rdbms.Load(loadSchemaVarFilepath, loadSchemaVarDuration, loadSchemaVarSteps, cfg)
+		result, err := rdbms.Load(loadSchemaVarFilepath, loadSchemaFileExtension, loadSchemaVarDuration, loadSchemaVarSteps, cfg)
 		if err != nil {
 			return err
 		}
-		result.Print()
+		for _, r := range result {
+			r.Print()
+		}
 		return nil
 	},
 }
 
 func init() {
-	loadSchemaCmd.PersistentFlags().StringVar(&loadSchemaVarFilepath, "scriptLoadPath", "", "Path where the load sql script is located.")
+	loadSchemaCmd.PersistentFlags().StringVar(&loadSchemaVarFilepath, "scriptLoadPath", "", "Path where the load sql script is located. This could be a single file or a directory")
 	err := loadSchemaCmd.MarkPersistentFlagRequired("scriptLoadPath")
 	if err != nil {
 		panic(err)
 	}
-
-	err = loadSchemaCmd.MarkPersistentFlagFilename("scriptLoadPath")
-	if err != nil {
-		panic(err)
-	}
-
+	loadSchemaCmd.Flags().StringVar(&loadSchemaFileExtension, "fileExtension", ".yaml", "File extension that is applied to the listing of files when scriptLoadPath points to a directory.")
 	loadSchemaCmd.PersistentFlags().DurationVar(&loadSchemaVarDuration, "defaultStepTimeout", 30*time.Second, "Default time for each SQL script step")
 	loadSchemaCmd.PersistentFlags().StringArrayVar(&loadSchemaVarSteps, "selectedStep", []string{}, "Select the steps that you want to execute, if empty you execute all the steps.")
 	schemaCmd.AddCommand(loadSchemaCmd)
