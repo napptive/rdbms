@@ -39,7 +39,7 @@ var _ = ginkgo.Describe("Load Schema test", func() {
 	}
 
 	var connstring = "host=localhost user=postgres password=Pass2020! port=5432"
-
+	var fileExtension = ".yaml"
 	var defaultDuration = 5 * time.Second
 
 	ginkgo.It("Should work", func() {
@@ -55,11 +55,12 @@ var _ = ginkgo.Describe("Load Schema test", func() {
 				SkipPing:          false,
 			},
 		}
-		result, err := Load(filepath, defaultDuration, []string{}, cfg)
+		result, err := Load(filepath, fileExtension, defaultDuration, []string{}, cfg)
 		gomega.Expect(err).To(gomega.Succeed())
-		gomega.Expect(result.ExecutedSteps).To(gomega.HaveLen(3))
-		gomega.Expect(result.SkippedSteps).To(gomega.HaveLen(0))
-		result.Print()
+		gomega.Expect(result).Should(gomega.HaveLen(1))
+		gomega.Expect(result[0].ExecutedSteps).To(gomega.HaveLen(3))
+		gomega.Expect(result[0].SkippedSteps).To(gomega.HaveLen(0))
+		result[0].Print()
 	})
 
 	ginkgo.It("Should work", func() {
@@ -75,11 +76,12 @@ var _ = ginkgo.Describe("Load Schema test", func() {
 				SkipPing:          false,
 			},
 		}
-		result, err := Load(filepath, defaultDuration, []string{"creation-step", "drop-step"}, cfg)
+		result, err := Load(filepath, fileExtension, defaultDuration, []string{"creation-step", "drop-step"}, cfg)
 		gomega.Expect(err).To(gomega.Succeed())
-		gomega.Expect(result.ExecutedSteps).To(gomega.HaveLen(2))
-		gomega.Expect(result.SkippedSteps).To(gomega.HaveLen(1))
-		result.Print()
+		gomega.Expect(result).Should(gomega.HaveLen(1))
+		gomega.Expect(result[0].ExecutedSteps).To(gomega.HaveLen(2))
+		gomega.Expect(result[0].SkippedSteps).To(gomega.HaveLen(1))
+		result[0].Print()
 	})
 
 })
