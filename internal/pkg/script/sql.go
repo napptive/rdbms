@@ -18,16 +18,15 @@ package script
 
 import (
 	"fmt"
-	"github.com/napptive/nerrors/pkg/nerrors"
-	"github.com/rs/zerolog/log"
-	"io/ioutil"
+	"os"
 	"time"
 
+	"github.com/napptive/nerrors/pkg/nerrors"
+	"github.com/rs/zerolog/log"
 	"gopkg.in/yaml.v2"
-
 )
 
-// SQL respresents the import file to execute batch command in the database.
+// SQL represents the import file to execute batch command in the database.
 type SQL struct {
 	Steps []SQLStep `yaml:"steps,flow"`
 }
@@ -39,7 +38,7 @@ type SQLStep struct {
 	Queries []string `yaml:"queries,flow"`
 }
 
-//TimeoutDuration parses the time duration of the step.
+// TimeoutDuration parses the time duration of the step.
 func (step *SQLStep) TimeoutDuration(defaultTimeout time.Duration) (time.Duration, error) {
 	if step.Timeout == "" {
 		return defaultTimeout, nil
@@ -49,15 +48,14 @@ func (step *SQLStep) TimeoutDuration(defaultTimeout time.Duration) (time.Duratio
 
 // SQLFileParse transform a file in a script SQL struct.
 func SQLFileParse(filepath string) (*SQL, error) {
-	data, err := ioutil.ReadFile(filepath)
+	data, err := os.ReadFile(filepath)
 	if err != nil {
 		return nil, err
 	}
 	return SQLParse(data)
 }
 
-
-func SQLParse(data []byte)  (*SQL, error){
+func SQLParse(data []byte) (*SQL, error) {
 	var result SQL
 	m := yaml.MapSlice{}
 	err := yaml.Unmarshal(data, &m)
